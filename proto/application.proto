@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "github.com/yourusername/escrow-bounty/pb";
+
+import "common.proto";
+
+// 申请接单相关请求/响应
+message AcceptBountyRequest {
+    int64 bounty_id = 1;
+    int64 hunter_id = 2;
+}
+
+message AcceptBountyResponse {
+    BountyApplication application = 1;
+}

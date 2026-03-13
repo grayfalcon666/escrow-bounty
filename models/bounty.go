@@ -5,9 +5,11 @@ import "time"
 type BountyStatus string
 
 const (
+	BountyStatusPaying     BountyStatus = "PAYING"
 	BountyStatusPending    BountyStatus = "PENDING"
 	BountyStatusInProgress BountyStatus = "IN_PROGRESS"
 	BountyStatusCompleted  BountyStatus = "COMPLETED"
+	BountyStatusFailed     BountyStatus = "FAILED"
 	BountyStatusCanceled   BountyStatus = "CANCELED"
 )
 

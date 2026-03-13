@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "github.com/yourusername/escrow-bounty/pb";
+
+import "google/protobuf/timestamp.proto";
+
+message Bounty {
+    int64 id = 1;
+    int64 employer_id = 2;
+    string title = 3;
+    string description = 4;
+    int64 reward_amount = 5;
+    string status = 6;
+    google.protobuf.Timestamp created_at = 7;
+    google.protobuf.Timestamp updated_at = 8;
+}
+
+message BountyApplication {
+    int64 id = 1;
+    int64 bounty_id = 2;
+    int64 hunter_id = 3;
+    string status = 4;
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
+}

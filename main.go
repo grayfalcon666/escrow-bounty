@@ -28,4 +28,6 @@ func main() {
 	log.Println("MVP 担保微服务启动成功！")
 
 	// 后续这里将用来启动 gRPC 服务器和 gRPC-Gateway
+	store := db.NewStore(db.Client)
+	_ = store
 }

@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "github.com/yourusername/escrow-bounty/pb";
+
+import "google/api/annotations.proto";
+import "bounty.proto";
+import "application.proto";
+
+// 统一服务接口
+service EscrowBountyService {
+    // 雇主发布悬赏
+    rpc CreateBounty(CreateBountyRequest) returns (CreateBountyResponse) {
+        option (google.api.http) = {
+            post: "/v1/bounties"
+            body: "*"
+        };
+    }
+
+    // 获取悬赏大厅列表
+    rpc ListBounties(ListBountiesRequest) returns (ListBountiesResponse) {
+        option (google.api.http) = {
+            get: "/v1/bounties"
+        };
+    }
+
+    // 获取单个悬赏详情
+    rpc GetBounty(GetBountyRequest) returns (GetBountyResponse) {
+        option (google.api.http) = {
+            get: "/v1/bounties/{id}"
+        };
+    }
+
+    // 猎人申请接单
+    rpc AcceptBounty(AcceptBountyRequest) returns (AcceptBountyResponse) {
+        option (google.api.http) = {
+            post: "/v1/bounties/{bounty_id}/accept"
+            body: "*"
+        };
+    }
+}

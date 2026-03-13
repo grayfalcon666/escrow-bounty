@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package pb;
+option go_package = "github.com/yourusername/escrow-bounty/pb";
+
+import "common.proto";
+
+// 悬赏相关请求/响应
+message CreateBountyRequest {
+    int64 employer_id = 1; 
+    string title = 2;
+    string description = 3;
+    int64 reward_amount = 4;
+}
+
+message CreateBountyResponse {
+    Bounty bounty = 1;
+}
+
+message ListBountiesRequest {
+    string status = 1;
+    int32 page_id = 2;
+    int32 page_size = 3;
+}
+
+message ListBountiesResponse {
+    repeated Bounty bounties = 1;
+}
+
+message GetBountyRequest {
+    int64 id = 1;
+}
+
+message GetBountyResponse {
+    Bounty bounty = 1;
+    repeated BountyApplication applications = 2;
+}
