@@ -104,6 +104,7 @@ func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankCl
 		// 分布式系统的部分失败处理 (Partial Failure)
 		log.Printf("调用 Simplebank 扣款异常: %v\n", rpcErr)
 
+		// SAGA模式
 		// 简单处理：我们假设只要报错就是明确的业务失败（如余额不足），将状态标为 FAILED
 		// 进阶处理：如果错误类型是 context.DeadlineExceeded (网络超时)，此时不知道钱到底扣没扣，
 		// 应该保留 PAYING 状态，让后台的异步 Worker 去轮询 Simplebank 查账，再决定是改为 PENDING 还是 FAILED。

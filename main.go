@@ -21,7 +21,7 @@ func main() {
 	store := db.NewStore(db.Client)
 
 	// TODO: 初始化 Simplebank 的 gRPC Client
-	var bankClient db.BankClient = nil
+	bankClient := &db.MockBankClient{}
 	server := gapi.NewServer(store, bankClient)
 
 	grpcServer := grpc.NewServer()
