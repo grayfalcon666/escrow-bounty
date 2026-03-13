@@ -17,3 +17,14 @@ func convertBounty(bounty *models.Bounty) *pb.Bounty {
 		UpdatedAt:   timestamppb.New(bounty.UpdatedAt),
 	}
 }
+
+func convertBountyApplication(app *models.BountyApplication) *pb.BountyApplication {
+	return &pb.BountyApplication{
+		Id:        app.ID,
+		BountyId:  app.BountyID,
+		HunterId:  app.HunterID,
+		Status:    string(app.Status),
+		CreatedAt: timestamppb.New(app.CreatedAt),
+		UpdatedAt: timestamppb.New(app.UpdatedAt),
+	}
+}

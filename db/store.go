@@ -128,36 +128,34 @@ func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankCl
 	return nil
 }
 
-// AcceptBounty 处理猎人“抢单/申请”逻辑
-func (s *Store) AcceptBounty(ctx context.Context, bountyID int64, hunterID int64) error {
+// AcceptBounty 处理猎人“抢单/申请”逻辑 (修改版：返回创建的申请记录)
+func (s *Store) AcceptBounty(ctx context.Context, bountyID int64, hunterID int64) (*models.BountyApplication, error) {
+	var application models.BountyApplication
 
-	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var bounty models.Bounty
-
-		// FOR UPDATE 行级锁，防止高并发下多个猎人同时改写同一个悬赏的状态
-		// 这相当于 Select ... For Update
 		if err := tx.Set("gorm:query_option", "FOR UPDATE").First(&bounty, bountyID).Error; err != nil {
 			return err
 		}
 
-		// 业务校验：只有 PENDING 的单子才能接
 		if bounty.Status != models.BountyStatusPending {
 			return fmt.Errorf("该悬赏当前不可接单，状态为: %s", bounty.Status)
 		}
 
-		// 记录申请信息
-		application := &models.BountyApplication{
+		application = models.BountyApplication{
 			BountyID: bountyID,
 			HunterID: hunterID,
 			Status:   models.AppStatusApplied,
 		}
-		if err := tx.Create(application).Error; err != nil {
+		// 落库
+		if err := tx.Create(&application).Error; err != nil {
 			return err
 		}
-
-		// 如果业务设计是“先到先得”，这里可以直接把 Bounty 状态改为 IN_PROGRESS
-		// 如果业务设计是“雇主挑人”，那么这里就什么都不改，等雇主调用另一个接口来挑选。
-
 		return nil
 	})
+
+	if err != nil {
+		return nil, err
+	}
+	return &application, nil
 }
