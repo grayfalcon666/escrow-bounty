@@ -10,6 +10,7 @@ import (
 	"github.com/grayfalcon666/escrow-bounty/gapi"
 	"github.com/grayfalcon666/escrow-bounty/pb"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/rs/cors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -63,13 +64,24 @@ func runGatewayServer(server pb.EscrowBountyServiceServer) {
 	mux := http.NewServeMux()
 	mux.Handle("/", grpcMux)
 
+	// 配置 CORS 中间件
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type", "Accept"},
+		ExposedHeaders:   []string{"Grpc-Metadata-Authorization"},
+		AllowCredentials: true,
+	})
+
+	handler := corsHandler.Handler(mux)
+
 	listener, err := net.Listen("tcp", httpServerAddress)
 	if err != nil {
 		log.Fatalf("无法监听 HTTP 端口: %v", err)
 	}
 
 	log.Printf("启动 HTTP Gateway 服务，监听地址: %s", listener.Addr().String())
-	err = http.Serve(listener, mux)
+	err = http.Serve(listener, handler)
 	if err != nil {
 		log.Fatalf("HTTP Gateway 服务运行失败: %v", err)
 	}
