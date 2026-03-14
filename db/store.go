@@ -79,10 +79,10 @@ func (s *Store) UpdateApplicationStatus(ctx context.Context, applicationID int64
 
 type BankClient interface {
 	// Transfer 发起转账 携带 idempotencyKey 防重放
-	Transfer(ctx context.Context, fromAccount, toAccount, amount int64, idempotencyKey string) error
+	Transfer(ctx context.Context, fromAccount, toAccount string, amount int64, idempotencyKey string) error
 }
 
-func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankClient BankClient, platformEscrowAccount int64) error {
+func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankClient BankClient, platformEscrowAccount string) error {
 
 	bounty.Status = models.BountyStatusPaying
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -98,7 +98,7 @@ func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankCl
 
 	idempotencyKey := fmt.Sprintf("publish_bounty_%d", bounty.ID)
 
-	rpcErr := bankClient.Transfer(ctx, bounty.EmployerID, platformEscrowAccount, bounty.RewardAmount, idempotencyKey)
+	rpcErr := bankClient.Transfer(ctx, bounty.EmployerUsername, platformEscrowAccount, bounty.RewardAmount, idempotencyKey)
 
 	if rpcErr != nil {
 		// 分布式系统的部分失败处理 (Partial Failure)
@@ -129,7 +129,7 @@ func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankCl
 }
 
 // AcceptBounty 处理猎人“抢单/申请”逻辑
-func (s *Store) AcceptBounty(ctx context.Context, bountyID int64, hunterID int64) (*models.BountyApplication, error) {
+func (s *Store) AcceptBounty(ctx context.Context, bountyID int64, hunterUsername string) (*models.BountyApplication, error) {
 	var application models.BountyApplication
 
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -143,9 +143,9 @@ func (s *Store) AcceptBounty(ctx context.Context, bountyID int64, hunterID int64
 		}
 
 		application = models.BountyApplication{
-			BountyID: bountyID,
-			HunterID: hunterID,
-			Status:   models.AppStatusApplied,
+			BountyID:       bountyID,
+			HunterUsername: hunterUsername,
+			Status:         models.AppStatusApplied,
 		}
 		// 落库
 		if err := tx.Create(&application).Error; err != nil {

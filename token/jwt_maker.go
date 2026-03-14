@@ -9,7 +9,7 @@ import (
 )
 
 type Payload struct {
-	UserID int64 `json:"user_id"`
+	Username string `json:"username"`
 	jwt.RegisteredClaims
 }
 
@@ -24,9 +24,9 @@ func NewJWTMaker(sercretKey string) (*JWTMaker, error) {
 	return &JWTMaker{secretKey: sercretKey}, nil
 }
 
-func (maker *JWTMaker) CreateToken(userID int64, duration time.Duration) (string, error) {
+func (maker *JWTMaker) CreateToken(username string, duration time.Duration) (string, error) {
 	payload := &Payload{
-		UserID: userID,
+		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(duration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

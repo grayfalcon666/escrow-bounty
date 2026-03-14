@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	dbSource          = "postgresql://root:secret@localhost:5432/escrow_db?sslmode=disable"
+	dbSource          = "postgresql://root:secret@localhost:5433/escrow_db?sslmode=disable"
 	grpcServerAddress = "0.0.0.0:9097"
 	httpServerAddress = "0.0.0.0:8087"
 )
@@ -34,8 +34,8 @@ func main() {
 		log.Fatalf("无法创建 JWT Maker: %v", err)
 	}
 
-	employerToken, _ := tokenMaker.CreateToken(101, 24*time.Hour) // 模拟雇主 ID 为 101
-	hunterToken, _ := tokenMaker.CreateToken(102, 24*time.Hour)   // 模拟猎人 ID 为 102
+	employerToken, _ := tokenMaker.CreateToken("101", 24*time.Hour) // 模拟雇主 ID 为 101
+	hunterToken, _ := tokenMaker.CreateToken("102", 24*time.Hour)   // 模拟猎人 ID 为 102
 
 	log.Println("========================================")
 	log.Println("本地测试用 Tokens (有效期 24 小时):")

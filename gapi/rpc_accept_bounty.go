@@ -20,7 +20,7 @@ func (server *Server) AcceptBounty(ctx context.Context, req *pb.AcceptBountyRequ
 	}
 
 	// 调用包含 FOR UPDATE 行级锁的并发安全方法
-	application, err := server.store.AcceptBounty(ctx, req.GetBountyId(), authPayload.UserID)
+	application, err := server.store.AcceptBounty(ctx, req.GetBountyId(), authPayload.Username)
 	if err != nil {
 		// 如果是因为违反了唯一索引（该猎人已经申请过这个悬赏）
 		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") ||
