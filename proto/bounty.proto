@@ -7,10 +7,9 @@ import "common.proto";
 
 // 悬赏相关请求/响应
 message CreateBountyRequest {
-    int64 employer_id = 1; 
-    string title = 2;
-    string description = 3;
-    int64 reward_amount = 4;
+    string title = 1;
+    string description = 2;
+    int64 reward_amount = 3;
 }
 
 message CreateBountyResponse {

@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"time"
 
 	"github.com/grayfalcon666/escrow-bounty/db"
 	"github.com/grayfalcon666/escrow-bounty/gapi"
@@ -26,13 +27,23 @@ func main() {
 	db.InitDB(dbSource)
 	store := db.NewStore(db.Client)
 	bankClient := &db.MockBankClient{}
-	jwtMaker, err := token.NewJWTMaker("12345678901234567890123456789012")
+
+	secretKey := "a-very-secret-key-that-is-at-least-32-bytes-long"
+	tokenMaker, err := token.NewJWTMaker(secretKey)
 	if err != nil {
-		log.Fatal(err)
-		return
+		log.Fatalf("无法创建 JWT Maker: %v", err)
 	}
 
-	server := gapi.NewServer(store, bankClient, jwtMaker)
+	employerToken, _ := tokenMaker.CreateToken(101, 24*time.Hour) // 模拟雇主 ID 为 101
+	hunterToken, _ := tokenMaker.CreateToken(102, 24*time.Hour)   // 模拟猎人 ID 为 102
+
+	log.Println("========================================")
+	log.Println("本地测试用 Tokens (有效期 24 小时):")
+	log.Printf("雇主 Token (用于发布悬赏, ID: 101):\nBearer %s\n\n", employerToken)
+	log.Printf("猎人 Token (用于接单申请, ID: 102):\nBearer %s\n", hunterToken)
+	log.Println("========================================")
+
+	server := gapi.NewServer(store, bankClient, tokenMaker)
 
 	go runGatewayServer(server)
 	runGrpcServer(server)

@@ -10,15 +10,17 @@ import (
 )
 
 func (server *Server) AcceptBounty(ctx context.Context, req *pb.AcceptBountyRequest) (*pb.AcceptBountyResponse, error) {
+	authPayload, err := server.authorizeUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	if req.GetBountyId() <= 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "非法的悬赏 ID")
 	}
-	if req.GetHunterId() <= 0 {
-		return nil, status.Errorf(codes.InvalidArgument, "非法的猎人 ID")
-	}
 
 	// 调用包含 FOR UPDATE 行级锁的并发安全方法
-	application, err := server.store.AcceptBounty(ctx, req.GetBountyId(), req.GetHunterId())
+	application, err := server.store.AcceptBounty(ctx, req.GetBountyId(), authPayload.UserID)
 	if err != nil {
 		// 如果是因为违反了唯一索引（该猎人已经申请过这个悬赏）
 		if strings.Contains(err.Error(), "duplicate key value violates unique constraint") ||

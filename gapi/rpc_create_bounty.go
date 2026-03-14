@@ -19,9 +19,6 @@ func (server *Server) CreateBounty(ctx context.Context, req *pb.CreateBountyRequ
 	if req.GetRewardAmount() <= 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "悬赏金额必须大于 0")
 	}
-	if req.GetEmployerId() <= 0 {
-		return nil, status.Errorf(codes.InvalidArgument, "非法的雇主 ID")
-	}
 
 	bounty := &models.Bounty{
 		EmployerID:   authPayload.UserID,

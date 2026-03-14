@@ -128,7 +128,7 @@ func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankCl
 	return nil
 }
 
-// AcceptBounty 处理猎人“抢单/申请”逻辑 (修改版：返回创建的申请记录)
+// AcceptBounty 处理猎人“抢单/申请”逻辑
 func (s *Store) AcceptBounty(ctx context.Context, bountyID int64, hunterID int64) (*models.BountyApplication, error) {
 	var application models.BountyApplication
 
