@@ -9,6 +9,7 @@ import (
 	"github.com/grayfalcon666/escrow-bounty/db"
 	"github.com/grayfalcon666/escrow-bounty/gapi"
 	"github.com/grayfalcon666/escrow-bounty/pb"
+	"github.com/grayfalcon666/escrow-bounty/token"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
 	"google.golang.org/grpc"
@@ -25,8 +26,13 @@ func main() {
 	db.InitDB(dbSource)
 	store := db.NewStore(db.Client)
 	bankClient := &db.MockBankClient{}
+	jwtMaker, err := token.NewJWTMaker("12345678901234567890123456789012")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 
-	server := gapi.NewServer(store, bankClient)
+	server := gapi.NewServer(store, bankClient, jwtMaker)
 
 	go runGatewayServer(server)
 	runGrpcServer(server)

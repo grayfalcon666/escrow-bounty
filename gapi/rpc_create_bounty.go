@@ -10,6 +10,11 @@ import (
 )
 
 func (server *Server) CreateBounty(ctx context.Context, req *pb.CreateBountyRequest) (*pb.CreateBountyResponse, error) {
+	authPayload, err := server.authorizeUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	// TODO 替换为validator进行校验
 	if req.GetRewardAmount() <= 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "悬赏金额必须大于 0")
@@ -19,7 +24,7 @@ func (server *Server) CreateBounty(ctx context.Context, req *pb.CreateBountyRequ
 	}
 
 	bounty := &models.Bounty{
-		EmployerID:   req.GetEmployerId(),
+		EmployerID:   authPayload.UserID,
 		Title:        req.GetTitle(),
 		Description:  req.GetDescription(),
 		RewardAmount: req.GetRewardAmount(),
@@ -30,9 +35,8 @@ func (server *Server) CreateBounty(ctx context.Context, req *pb.CreateBountyRequ
 	platformEscrowAccount := int64(999)
 
 	// 调用带有 Saga 分布式事务逻辑的 Store 方法
-	err := server.store.PublishBounty(ctx, bounty, server.bankClient, platformEscrowAccount)
+	err = server.store.PublishBounty(ctx, bounty, server.bankClient, platformEscrowAccount)
 	if err != nil {
-		// 如果扣款失败或数据库异常，返回 gRPC 内部错误
 		return nil, status.Errorf(codes.Internal, "发布悬赏失败: %v", err)
 	}
 
