@@ -22,10 +22,18 @@ func NewGRPCBankClient(cc grpc.ClientConnInterface, systemToken string) *GRPCBan
 }
 
 func (c *GRPCBankClient) Transfer(ctx context.Context, fromAccountID, toAccountID, amount int64, idempotencyKey string) error {
-	md := metadata.Pairs("authorization", "bearer "+c.systemToken)
+	var outgoingCtx context.Context
 
-	// 创建一个新的外发上下文  把 Metadata 塞进去
-	outgoingCtx := metadata.NewOutgoingContext(ctx, md)
+	md, ok := metadata.FromIncomingContext(ctx)
+
+	if ok && len(md.Get("authorization")) > 0 {
+		// 场景 A：前端用户主动触发 (如：Alice 发布悬赏)。将 Alice 的 Token 透传给下游 Simple Bank！
+		outgoingCtx = metadata.NewOutgoingContext(context.Background(), md)
+	} else {
+		// 场景 B：微服务后台异步触发 (如：平台把钱结算给猎人)。此时没有前端 Token，使用系统 Token。
+		systemMD := metadata.Pairs("authorization", "Bearer "+c.systemToken)
+		outgoingCtx = metadata.NewOutgoingContext(context.Background(), systemMD)
+	}
 
 	req := &simplebankpb.TransferTxRequest{
 		FromAccountId:  fromAccountID,

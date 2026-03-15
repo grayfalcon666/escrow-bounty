@@ -1,5 +1,8 @@
 DB_URL=postgresql://root:secret@localhost:5433/escrow_db?sslmode=disable
 
+server:
+	go run main.go
+
 postgres:
 	docker run --name escrow-postgres -p 5433:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:14-alpine
 
@@ -23,4 +26,4 @@ proto:
 		--grpc-gateway_out=pb --grpc-gateway_opt=paths=source_relative \
 		proto/*.proto
 
-.PHONY: postgres createdb dropdb migrateup migratedown proto
+.PHONY: server postgres createdb dropdb migrateup migratedown proto
