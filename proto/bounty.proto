@@ -10,6 +10,7 @@ message CreateBountyRequest {
     string title = 1;
     string description = 2;
     int64 reward_amount = 3;
+    int64 employer_account_id = 4;
 }
 
 message CreateBountyResponse {

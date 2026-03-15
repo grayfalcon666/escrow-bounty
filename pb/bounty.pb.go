@@ -23,12 +23,13 @@ const (
 
 // 悬赏相关请求/响应
 type CreateBountyRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
-	RewardAmount  int64                  `protobuf:"varint,3,opt,name=reward_amount,json=rewardAmount,proto3" json:"reward_amount,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Title             string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description       string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	RewardAmount      int64                  `protobuf:"varint,3,opt,name=reward_amount,json=rewardAmount,proto3" json:"reward_amount,omitempty"`
+	EmployerAccountId int64                  `protobuf:"varint,4,opt,name=employer_account_id,json=employerAccountId,proto3" json:"employer_account_id,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *CreateBountyRequest) Reset() {
@@ -78,6 +79,13 @@ func (x *CreateBountyRequest) GetDescription() string {
 func (x *CreateBountyRequest) GetRewardAmount() int64 {
 	if x != nil {
 		return x.RewardAmount
+	}
+	return 0
+}
+
+func (x *CreateBountyRequest) GetEmployerAccountId() int64 {
+	if x != nil {
+		return x.EmployerAccountId
 	}
 	return 0
 }
@@ -330,11 +338,12 @@ var File_bounty_proto protoreflect.FileDescriptor
 
 const file_bounty_proto_rawDesc = "" +
 	"\n" +
-	"\fbounty.proto\x12\x02pb\x1a\fcommon.proto\"r\n" +
+	"\fbounty.proto\x12\x02pb\x1a\fcommon.proto\"\xa2\x01\n" +
 	"\x13CreateBountyRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12#\n" +
-	"\rreward_amount\x18\x03 \x01(\x03R\frewardAmount\":\n" +
+	"\rreward_amount\x18\x03 \x01(\x03R\frewardAmount\x12.\n" +
+	"\x13employer_account_id\x18\x04 \x01(\x03R\x11employerAccountId\":\n" +
 	"\x14CreateBountyResponse\x12\"\n" +
 	"\x06bounty\x18\x01 \x01(\v2\n" +
 	".pb.BountyR\x06bounty\"c\n" +

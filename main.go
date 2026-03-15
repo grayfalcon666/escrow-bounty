@@ -14,6 +14,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -21,27 +22,40 @@ const (
 	dbSource          = "postgresql://root:secret@localhost:5433/escrow_db?sslmode=disable"
 	grpcServerAddress = "0.0.0.0:9097"
 	httpServerAddress = "0.0.0.0:8087"
+	simpleBankAddress = "localhost:11453"
 )
 
 func main() {
 	db.InitDB(dbSource)
 	store := db.NewStore(db.Client)
-	bankClient := &db.MockBankClient{}
 
-	secretKey := "a-very-secret-key-that-is-at-least-32-bytes-long"
+	secretKey := "12345678901234567890123456789012"
 	tokenMaker, err := token.NewJWTMaker(secretKey)
 	if err != nil {
 		log.Fatalf("无法创建 JWT Maker: %v", err)
 	}
 
-	employerToken, _ := tokenMaker.CreateToken("101", 24*time.Hour) // 模拟雇主 ID 为 101
-	hunterToken, _ := tokenMaker.CreateToken("102", 24*time.Hour)   // 模拟猎人 ID 为 102
+	conn, err := grpc.NewClient(
+		simpleBankAddress,
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatalf("无法连接到 Simple Bank: %v", err)
+	}
+	defer conn.Close()
 
-	log.Println("========================================")
-	log.Println("本地测试用 Tokens (有效期 24 小时):")
-	log.Printf("雇主 Token (用于发布悬赏, ID: 101):\nBearer %s\n\n", employerToken)
-	log.Printf("猎人 Token (用于接单申请, ID: 102):\nBearer %s\n", hunterToken)
-	log.Println("========================================")
+	// employerToken, _ := tokenMaker.CreateToken("101", 24*time.Hour) // 模拟雇主 ID 为 101
+	// hunterToken, _ := tokenMaker.CreateToken("102", 24*time.Hour)   // 模拟猎人 ID 为 102
+
+	// log.Println("========================================")
+	// log.Println("本地测试用 Tokens (有效期 24 小时):")
+	// log.Printf("雇主 Token (用于发布悬赏, ID: 101):\nBearer %s\n\n", employerToken)
+	// log.Printf("猎人 Token (用于接单申请, ID: 102):\nBearer %s\n", hunterToken)
+	// log.Println("========================================")
+
+	systemToken, _ := tokenMaker.CreateToken("escrow_system", 365*24*time.Hour)
+
+	bankClient := db.NewGRPCBankClient(conn, systemToken)
 
 	server := gapi.NewServer(store, bankClient, tokenMaker)
 

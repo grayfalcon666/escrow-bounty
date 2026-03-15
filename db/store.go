@@ -79,10 +79,10 @@ func (s *Store) UpdateApplicationStatus(ctx context.Context, applicationID int64
 
 type BankClient interface {
 	// Transfer 发起转账 携带 idempotencyKey 防重放
-	Transfer(ctx context.Context, fromAccount, toAccount string, amount int64, idempotencyKey string) error
+	Transfer(ctx context.Context, fromAccount, toAccount int64, amount int64, idempotencyKey string) error
 }
 
-func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankClient BankClient, platformEscrowAccount string) error {
+func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankClient BankClient, employerAccountID, platformEscrowAccountID int64) error {
 
 	bounty.Status = models.BountyStatusPaying
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -98,7 +98,7 @@ func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankCl
 
 	idempotencyKey := fmt.Sprintf("publish_bounty_%d", bounty.ID)
 
-	rpcErr := bankClient.Transfer(ctx, bounty.EmployerUsername, platformEscrowAccount, bounty.RewardAmount, idempotencyKey)
+	rpcErr := bankClient.Transfer(ctx, employerAccountID, platformEscrowAccountID, bounty.RewardAmount, idempotencyKey)
 
 	if rpcErr != nil {
 		// 分布式系统的部分失败处理 (Partial Failure)

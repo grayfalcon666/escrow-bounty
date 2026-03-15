@@ -2,7 +2,6 @@ package gapi
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/grayfalcon666/escrow-bounty/models"
 	"github.com/grayfalcon666/escrow-bounty/pb"
@@ -29,11 +28,16 @@ func (server *Server) CreateBounty(ctx context.Context, req *pb.CreateBountyRequ
 		// Status 不需要在这里赋值 PublishBounty 事务里会将其初始化为 PAYING
 	}
 
+	employerAccountID := req.GetEmployerAccountId()
+	if employerAccountID <= 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "必须指定支付账户 ID")
+	}
+
 	// 设定平台担保账户的 ID
-	platformEscrowAccount := strconv.Itoa(999)
+	platformEscrowAccountID := int64(4)
 
 	// 调用带有 Saga 分布式事务逻辑的 Store 方法
-	err = server.store.PublishBounty(ctx, bounty, server.bankClient, platformEscrowAccount)
+	err = server.store.PublishBounty(ctx, bounty, server.bankClient, employerAccountID, platformEscrowAccountID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "发布悬赏失败: %v", err)
 	}
