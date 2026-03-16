@@ -25,37 +25,47 @@ var File_service_proto protoreflect.FileDescriptor
 
 const file_service_proto_rawDesc = "" +
 	"\n" +
-	"\rservice.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\fbounty.proto\x1a\x11application.proto2\x8e\x03\n" +
+	"\rservice.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\fbounty.proto\x1a\x11application.proto\x1a\x12confirmation.proto2\xf8\x04\n" +
 	"\x13EscrowBountyService\x12Z\n" +
 	"\fCreateBounty\x12\x17.pb.CreateBountyRequest\x1a\x18.pb.CreateBountyResponse\"\x17\x82\xd3\xe4\x93\x02\x11:\x01*\"\f/v1/bounties\x12W\n" +
 	"\fListBounties\x12\x17.pb.ListBountiesRequest\x1a\x18.pb.ListBountiesResponse\"\x14\x82\xd3\xe4\x93\x02\x0e\x12\f/v1/bounties\x12S\n" +
 	"\tGetBounty\x12\x14.pb.GetBountyRequest\x1a\x15.pb.GetBountyResponse\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/v1/bounties/{id}\x12m\n" +
-	"\fAcceptBounty\x12\x17.pb.AcceptBountyRequest\x1a\x18.pb.AcceptBountyResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/v1/bounties/{bounty_id}/acceptB*Z(github.com/yourusername/escrow-bounty/pbb\x06proto3"
+	"\fAcceptBounty\x12\x17.pb.AcceptBountyRequest\x1a\x18.pb.AcceptBountyResponse\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/v1/bounties/{bounty_id}/accept\x12q\n" +
+	"\rConfirmHunter\x12\x18.pb.ConfirmHunterRequest\x1a\x19.pb.ConfirmHunterResponse\"+\x82\xd3\xe4\x93\x02%:\x01*\" /v1/bounties/{bounty_id}/confirm\x12u\n" +
+	"\x0eCompleteBounty\x12\x19.pb.CompleteBountyRequest\x1a\x1a.pb.CompleteBountyResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/v1/bounties/{bounty_id}/completeB+Z)github.com/grayfalcon666/escrow-bounty/pbb\x06proto3"
 
 var file_service_proto_goTypes = []any{
-	(*CreateBountyRequest)(nil),  // 0: pb.CreateBountyRequest
-	(*ListBountiesRequest)(nil),  // 1: pb.ListBountiesRequest
-	(*GetBountyRequest)(nil),     // 2: pb.GetBountyRequest
-	(*AcceptBountyRequest)(nil),  // 3: pb.AcceptBountyRequest
-	(*CreateBountyResponse)(nil), // 4: pb.CreateBountyResponse
-	(*ListBountiesResponse)(nil), // 5: pb.ListBountiesResponse
-	(*GetBountyResponse)(nil),    // 6: pb.GetBountyResponse
-	(*AcceptBountyResponse)(nil), // 7: pb.AcceptBountyResponse
+	(*CreateBountyRequest)(nil),    // 0: pb.CreateBountyRequest
+	(*ListBountiesRequest)(nil),    // 1: pb.ListBountiesRequest
+	(*GetBountyRequest)(nil),       // 2: pb.GetBountyRequest
+	(*AcceptBountyRequest)(nil),    // 3: pb.AcceptBountyRequest
+	(*ConfirmHunterRequest)(nil),   // 4: pb.ConfirmHunterRequest
+	(*CompleteBountyRequest)(nil),  // 5: pb.CompleteBountyRequest
+	(*CreateBountyResponse)(nil),   // 6: pb.CreateBountyResponse
+	(*ListBountiesResponse)(nil),   // 7: pb.ListBountiesResponse
+	(*GetBountyResponse)(nil),      // 8: pb.GetBountyResponse
+	(*AcceptBountyResponse)(nil),   // 9: pb.AcceptBountyResponse
+	(*ConfirmHunterResponse)(nil),  // 10: pb.ConfirmHunterResponse
+	(*CompleteBountyResponse)(nil), // 11: pb.CompleteBountyResponse
 }
 var file_service_proto_depIdxs = []int32{
-	0, // 0: pb.EscrowBountyService.CreateBounty:input_type -> pb.CreateBountyRequest
-	1, // 1: pb.EscrowBountyService.ListBounties:input_type -> pb.ListBountiesRequest
-	2, // 2: pb.EscrowBountyService.GetBounty:input_type -> pb.GetBountyRequest
-	3, // 3: pb.EscrowBountyService.AcceptBounty:input_type -> pb.AcceptBountyRequest
-	4, // 4: pb.EscrowBountyService.CreateBounty:output_type -> pb.CreateBountyResponse
-	5, // 5: pb.EscrowBountyService.ListBounties:output_type -> pb.ListBountiesResponse
-	6, // 6: pb.EscrowBountyService.GetBounty:output_type -> pb.GetBountyResponse
-	7, // 7: pb.EscrowBountyService.AcceptBounty:output_type -> pb.AcceptBountyResponse
-	4, // [4:8] is the sub-list for method output_type
-	0, // [0:4] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: pb.EscrowBountyService.CreateBounty:input_type -> pb.CreateBountyRequest
+	1,  // 1: pb.EscrowBountyService.ListBounties:input_type -> pb.ListBountiesRequest
+	2,  // 2: pb.EscrowBountyService.GetBounty:input_type -> pb.GetBountyRequest
+	3,  // 3: pb.EscrowBountyService.AcceptBounty:input_type -> pb.AcceptBountyRequest
+	4,  // 4: pb.EscrowBountyService.ConfirmHunter:input_type -> pb.ConfirmHunterRequest
+	5,  // 5: pb.EscrowBountyService.CompleteBounty:input_type -> pb.CompleteBountyRequest
+	6,  // 6: pb.EscrowBountyService.CreateBounty:output_type -> pb.CreateBountyResponse
+	7,  // 7: pb.EscrowBountyService.ListBounties:output_type -> pb.ListBountiesResponse
+	8,  // 8: pb.EscrowBountyService.GetBounty:output_type -> pb.GetBountyResponse
+	9,  // 9: pb.EscrowBountyService.AcceptBounty:output_type -> pb.AcceptBountyResponse
+	10, // 10: pb.EscrowBountyService.ConfirmHunter:output_type -> pb.ConfirmHunterResponse
+	11, // 11: pb.EscrowBountyService.CompleteBounty:output_type -> pb.CompleteBountyResponse
+	6,  // [6:12] is the sub-list for method output_type
+	0,  // [0:6] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_service_proto_init() }
@@ -65,6 +75,7 @@ func file_service_proto_init() {
 	}
 	file_bounty_proto_init()
 	file_application_proto_init()
+	file_confirmation_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

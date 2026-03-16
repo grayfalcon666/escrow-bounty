@@ -53,7 +53,7 @@ func main() {
 	// log.Printf("猎人 Token (用于接单申请, ID: 102):\nBearer %s\n", hunterToken)
 	// log.Println("========================================")
 
-	systemToken, _ := tokenMaker.CreateToken("escrow_system", 365*24*time.Hour)
+	systemToken, _ := tokenMaker.CreateToken("escrow", 365*24*time.Hour)
 
 	bankClient := db.NewGRPCBankClient(conn, systemToken)
 

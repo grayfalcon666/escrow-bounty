@@ -19,10 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	EscrowBountyService_CreateBounty_FullMethodName = "/pb.EscrowBountyService/CreateBounty"
-	EscrowBountyService_ListBounties_FullMethodName = "/pb.EscrowBountyService/ListBounties"
-	EscrowBountyService_GetBounty_FullMethodName    = "/pb.EscrowBountyService/GetBounty"
-	EscrowBountyService_AcceptBounty_FullMethodName = "/pb.EscrowBountyService/AcceptBounty"
+	EscrowBountyService_CreateBounty_FullMethodName   = "/pb.EscrowBountyService/CreateBounty"
+	EscrowBountyService_ListBounties_FullMethodName   = "/pb.EscrowBountyService/ListBounties"
+	EscrowBountyService_GetBounty_FullMethodName      = "/pb.EscrowBountyService/GetBounty"
+	EscrowBountyService_AcceptBounty_FullMethodName   = "/pb.EscrowBountyService/AcceptBounty"
+	EscrowBountyService_ConfirmHunter_FullMethodName  = "/pb.EscrowBountyService/ConfirmHunter"
+	EscrowBountyService_CompleteBounty_FullMethodName = "/pb.EscrowBountyService/CompleteBounty"
 )
 
 // EscrowBountyServiceClient is the client API for EscrowBountyService service.
@@ -39,6 +41,10 @@ type EscrowBountyServiceClient interface {
 	GetBounty(ctx context.Context, in *GetBountyRequest, opts ...grpc.CallOption) (*GetBountyResponse, error)
 	// 猎人申请接单
 	AcceptBounty(ctx context.Context, in *AcceptBountyRequest, opts ...grpc.CallOption) (*AcceptBountyResponse, error)
+	// 雇主选定猎人
+	ConfirmHunter(ctx context.Context, in *ConfirmHunterRequest, opts ...grpc.CallOption) (*ConfirmHunterResponse, error)
+	// 雇主确认完成并打款
+	CompleteBounty(ctx context.Context, in *CompleteBountyRequest, opts ...grpc.CallOption) (*CompleteBountyResponse, error)
 }
 
 type escrowBountyServiceClient struct {
@@ -89,6 +95,26 @@ func (c *escrowBountyServiceClient) AcceptBounty(ctx context.Context, in *Accept
 	return out, nil
 }
 
+func (c *escrowBountyServiceClient) ConfirmHunter(ctx context.Context, in *ConfirmHunterRequest, opts ...grpc.CallOption) (*ConfirmHunterResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ConfirmHunterResponse)
+	err := c.cc.Invoke(ctx, EscrowBountyService_ConfirmHunter_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *escrowBountyServiceClient) CompleteBounty(ctx context.Context, in *CompleteBountyRequest, opts ...grpc.CallOption) (*CompleteBountyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CompleteBountyResponse)
+	err := c.cc.Invoke(ctx, EscrowBountyService_CompleteBounty_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EscrowBountyServiceServer is the server API for EscrowBountyService service.
 // All implementations must embed UnimplementedEscrowBountyServiceServer
 // for forward compatibility.
@@ -103,6 +129,10 @@ type EscrowBountyServiceServer interface {
 	GetBounty(context.Context, *GetBountyRequest) (*GetBountyResponse, error)
 	// 猎人申请接单
 	AcceptBounty(context.Context, *AcceptBountyRequest) (*AcceptBountyResponse, error)
+	// 雇主选定猎人
+	ConfirmHunter(context.Context, *ConfirmHunterRequest) (*ConfirmHunterResponse, error)
+	// 雇主确认完成并打款
+	CompleteBounty(context.Context, *CompleteBountyRequest) (*CompleteBountyResponse, error)
 	mustEmbedUnimplementedEscrowBountyServiceServer()
 }
 
@@ -124,6 +154,12 @@ func (UnimplementedEscrowBountyServiceServer) GetBounty(context.Context, *GetBou
 }
 func (UnimplementedEscrowBountyServiceServer) AcceptBounty(context.Context, *AcceptBountyRequest) (*AcceptBountyResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method AcceptBounty not implemented")
+}
+func (UnimplementedEscrowBountyServiceServer) ConfirmHunter(context.Context, *ConfirmHunterRequest) (*ConfirmHunterResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ConfirmHunter not implemented")
+}
+func (UnimplementedEscrowBountyServiceServer) CompleteBounty(context.Context, *CompleteBountyRequest) (*CompleteBountyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CompleteBounty not implemented")
 }
 func (UnimplementedEscrowBountyServiceServer) mustEmbedUnimplementedEscrowBountyServiceServer() {}
 func (UnimplementedEscrowBountyServiceServer) testEmbeddedByValue()                             {}
@@ -218,6 +254,42 @@ func _EscrowBountyService_AcceptBounty_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EscrowBountyService_ConfirmHunter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfirmHunterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EscrowBountyServiceServer).ConfirmHunter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EscrowBountyService_ConfirmHunter_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EscrowBountyServiceServer).ConfirmHunter(ctx, req.(*ConfirmHunterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _EscrowBountyService_CompleteBounty_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CompleteBountyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EscrowBountyServiceServer).CompleteBounty(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EscrowBountyService_CompleteBounty_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EscrowBountyServiceServer).CompleteBounty(ctx, req.(*CompleteBountyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EscrowBountyService_ServiceDesc is the grpc.ServiceDesc for EscrowBountyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -240,6 +312,14 @@ var EscrowBountyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AcceptBounty",
 			Handler:    _EscrowBountyService_AcceptBounty_Handler,
+		},
+		{
+			MethodName: "ConfirmHunter",
+			Handler:    _EscrowBountyService_ConfirmHunter_Handler,
+		},
+		{
+			MethodName: "CompleteBounty",
+			Handler:    _EscrowBountyService_CompleteBounty_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

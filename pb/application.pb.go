@@ -23,10 +23,11 @@ const (
 
 // 申请接单相关请求/响应
 type AcceptBountyRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	BountyId      int64                  `protobuf:"varint,1,opt,name=bounty_id,json=bountyId,proto3" json:"bounty_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	BountyId        int64                  `protobuf:"varint,1,opt,name=bounty_id,json=bountyId,proto3" json:"bounty_id,omitempty"`
+	HunterAccountId int64                  `protobuf:"varint,2,opt,name=hunter_account_id,json=hunterAccountId,proto3" json:"hunter_account_id,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *AcceptBountyRequest) Reset() {
@@ -62,6 +63,13 @@ func (*AcceptBountyRequest) Descriptor() ([]byte, []int) {
 func (x *AcceptBountyRequest) GetBountyId() int64 {
 	if x != nil {
 		return x.BountyId
+	}
+	return 0
+}
+
+func (x *AcceptBountyRequest) GetHunterAccountId() int64 {
+	if x != nil {
+		return x.HunterAccountId
 	}
 	return 0
 }
@@ -114,11 +122,12 @@ var File_application_proto protoreflect.FileDescriptor
 
 const file_application_proto_rawDesc = "" +
 	"\n" +
-	"\x11application.proto\x12\x02pb\x1a\fcommon.proto\"2\n" +
+	"\x11application.proto\x12\x02pb\x1a\fcommon.proto\"^\n" +
 	"\x13AcceptBountyRequest\x12\x1b\n" +
-	"\tbounty_id\x18\x01 \x01(\x03R\bbountyId\"O\n" +
+	"\tbounty_id\x18\x01 \x01(\x03R\bbountyId\x12*\n" +
+	"\x11hunter_account_id\x18\x02 \x01(\x03R\x0fhunterAccountId\"O\n" +
 	"\x14AcceptBountyResponse\x127\n" +
-	"\vapplication\x18\x01 \x01(\v2\x15.pb.BountyApplicationR\vapplicationB*Z(github.com/yourusername/escrow-bounty/pbb\x06proto3"
+	"\vapplication\x18\x01 \x01(\v2\x15.pb.BountyApplicationR\vapplicationB+Z)github.com/grayfalcon666/escrow-bounty/pbb\x06proto3"
 
 var (
 	file_application_proto_rawDescOnce sync.Once

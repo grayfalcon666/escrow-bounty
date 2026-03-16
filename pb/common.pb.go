@@ -230,7 +230,7 @@ const file_common_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB*Z(github.com/yourusername/escrow-bounty/pbb\x06proto3"
+	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB+Z)github.com/grayfalcon666/escrow-bounty/pbb\x06proto3"
 
 var (
 	file_common_proto_rawDescOnce sync.Once

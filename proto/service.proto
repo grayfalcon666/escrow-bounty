@@ -1,11 +1,12 @@
 syntax = "proto3";
 
 package pb;
-option go_package = "github.com/yourusername/escrow-bounty/pb";
+option go_package = "github.com/grayfalcon666/escrow-bounty/pb";
 
 import "google/api/annotations.proto";
 import "bounty.proto";
 import "application.proto";
+import "confirmation.proto";
 
 // 统一服务接口
 service EscrowBountyService {
@@ -35,6 +36,22 @@ service EscrowBountyService {
     rpc AcceptBounty(AcceptBountyRequest) returns (AcceptBountyResponse) {
         option (google.api.http) = {
             post: "/v1/bounties/{bounty_id}/accept"
+            body: "*"
+        };
+    }
+
+    // 雇主选定猎人
+    rpc ConfirmHunter(ConfirmHunterRequest) returns (ConfirmHunterResponse) {
+        option (google.api.http) = {
+            post: "/v1/bounties/{bounty_id}/confirm"
+            body: "*"
+        };
+    }
+
+    // 雇主确认完成并打款
+    rpc CompleteBounty(CompleteBountyRequest) returns (CompleteBountyResponse) {
+        option (google.api.http) = {
+            post: "/v1/bounties/{bounty_id}/complete"
             body: "*"
         };
     }

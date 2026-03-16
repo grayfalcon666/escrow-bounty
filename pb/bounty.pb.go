@@ -359,7 +359,7 @@ const file_bounty_proto_rawDesc = "" +
 	"\x11GetBountyResponse\x12\"\n" +
 	"\x06bounty\x18\x01 \x01(\v2\n" +
 	".pb.BountyR\x06bounty\x129\n" +
-	"\fapplications\x18\x02 \x03(\v2\x15.pb.BountyApplicationR\fapplicationsB*Z(github.com/yourusername/escrow-bounty/pbb\x06proto3"
+	"\fapplications\x18\x02 \x03(\v2\x15.pb.BountyApplicationR\fapplicationsB+Z)github.com/grayfalcon666/escrow-bounty/pbb\x06proto3"
 
 var (
 	file_bounty_proto_rawDescOnce sync.Once

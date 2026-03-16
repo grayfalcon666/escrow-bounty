@@ -129,7 +129,7 @@ func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankCl
 }
 
 // AcceptBounty 处理猎人“抢单/申请”逻辑
-func (s *Store) AcceptBounty(ctx context.Context, bountyID int64, hunterUsername string) (*models.BountyApplication, error) {
+func (s *Store) AcceptBounty(ctx context.Context, bountyID, hunter_account_id int64, hunterUsername string) (*models.BountyApplication, error) {
 	var application models.BountyApplication
 
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -143,9 +143,10 @@ func (s *Store) AcceptBounty(ctx context.Context, bountyID int64, hunterUsername
 		}
 
 		application = models.BountyApplication{
-			BountyID:       bountyID,
-			HunterUsername: hunterUsername,
-			Status:         models.AppStatusApplied,
+			BountyID:        bountyID,
+			HunterUsername:  hunterUsername,
+			HunterAccountID: hunter_account_id,
+			Status:          models.AppStatusApplied,
 		}
 		// 落库
 		if err := tx.Create(&application).Error; err != nil {
@@ -158,4 +159,94 @@ func (s *Store) AcceptBounty(ctx context.Context, bountyID int64, hunterUsername
 		return nil, err
 	}
 	return &application, nil
+}
+
+func (s *Store) ConfirmHunter(ctx context.Context, bountyID int64, applicationID int64, employerUsername string) error {
+	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		var bounty models.Bounty
+		// 加上 FOR UPDATE 锁，防止并发修改
+		if err := tx.Set("gorm:query_option", "FOR UPDATE").First(&bounty, bountyID).Error; err != nil {
+			return err
+		}
+
+		if bounty.EmployerUsername != employerUsername {
+			return fmt.Errorf("权限不足: 只能操作您自己发布的悬赏")
+		}
+		if bounty.Status != models.BountyStatusPending {
+			return fmt.Errorf("悬赏状态不合法，当前状态: %s", bounty.Status)
+		}
+
+		// 将选中的申请状态改为 ACCEPTED
+		res := tx.Model(&models.BountyApplication{}).
+			Where("id = ? AND bounty_id = ?", applicationID, bountyID).
+			Update("status", models.AppStatusAccepted)
+		if res.Error != nil {
+			return res.Error
+		}
+		if res.RowsAffected == 0 {
+			return fmt.Errorf("找不到对应的申请记录")
+		}
+
+		// 将其他落选的申请状态改为 REJECTED
+		if err := tx.Model(&models.BountyApplication{}).
+			Where("bounty_id = ? AND id != ?", bountyID, applicationID).
+			Update("status", models.AppStatusRejected).Error; err != nil {
+			return err
+		}
+
+		// 将悬赏本身状态改为进行中
+		return tx.Model(&bounty).Update("status", models.BountyStatusInProgress).Error
+	})
+}
+
+func (s *Store) CompleteBounty(ctx context.Context, bountyID int64, employerUsername string, bankClient BankClient, platformAccountID int64) error {
+	var rewardAmount int64
+	var hunterAccountID int64
+
+	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		var bounty models.Bounty
+		if err := tx.Set("gorm:query_option", "FOR UPDATE").First(&bounty, bountyID).Error; err != nil {
+			return err
+		}
+
+		if bounty.EmployerUsername != employerUsername {
+			return fmt.Errorf("权限不足: 非悬赏发布者")
+		}
+		if bounty.Status != models.BountyStatusInProgress {
+			return fmt.Errorf("悬赏尚未开始或已结束，当前状态: %s", bounty.Status)
+		}
+
+		// 找到中标的那个猎人申请记录，提取收款账户
+		var app models.BountyApplication
+		if err := tx.Where("bounty_id = ? AND status = ?", bountyID, models.AppStatusAccepted).First(&app).Error; err != nil {
+			return fmt.Errorf("找不到中标的猎人记录: %w", err)
+		}
+
+		rewardAmount = bounty.RewardAmount
+		hunterAccountID = app.HunterAccountID
+
+		// 更新状态为 SETTLING 防止重复点击
+		return tx.Model(&bounty).Update("status", "SETTLING").Error
+	})
+
+	if err != nil {
+		return err
+	}
+
+	// 发起微服务转账调用
+	idempotencyKey := fmt.Errorf("complete_bounty_%d", bountyID).Error()
+
+	// 这里传入 context.Background() 而不是包含雇主 Token 的 ctx
+	// 钱是从平台担保账户 -> 猎人账户，必须用平台特权操作！
+	rpcErr := bankClient.Transfer(context.Background(), platformAccountID, hunterAccountID, rewardAmount, idempotencyKey)
+
+	if rpcErr != nil {
+		// 如果网络超时或银行异常，状态保持为 SETTLING，等待后续对账补偿
+		return fmt.Errorf("资金打款到猎人账户失败，需人工介入: %w", rpcErr)
+	}
+
+	// 转账成功 标记悬赏完成
+	return s.db.WithContext(ctx).Model(&models.Bounty{}).
+		Where("id = ?", bountyID).
+		Update("status", models.BountyStatusCompleted).Error
 }

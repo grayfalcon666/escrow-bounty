@@ -38,10 +38,11 @@ type Bounty struct {
 
 // BountyApplication 映射 bounty_applications 表
 type BountyApplication struct {
-	ID             int64             `gorm:"primaryKey;autoIncrement" json:"id"`
-	BountyID       int64             `gorm:"not null;uniqueIndex:idx_unique_bounty_hunter" json:"bounty_id"`
-	HunterUsername string            `gorm:"type:varchar(255);not null;uniqueIndex:idx_unique_bounty_hunter;index" json:"hunter_username"`
-	Status         ApplicationStatus `gorm:"type:varchar(50);not null;default:'APPLIED'" json:"status"`
-	CreatedAt      time.Time         `gorm:"autoCreateTime" json:"created_at"`
-	UpdatedAt      time.Time         `gorm:"autoUpdateTime" json:"updated_at"`
+	ID              int64             `gorm:"primaryKey;autoIncrement" json:"id"`
+	BountyID        int64             `gorm:"not null;uniqueIndex:idx_unique_bounty_hunter" json:"bounty_id"`
+	HunterUsername  string            `gorm:"type:varchar(255);not null;uniqueIndex:idx_unique_bounty_hunter;index" json:"hunter_username"`
+	HunterAccountID int64             `gorm:"not null" json:"hunter_account_id"`
+	Status          ApplicationStatus `gorm:"type:varchar(50);not null;default:'APPLIED'" json:"status"`
+	CreatedAt       time.Time         `gorm:"autoCreateTime" json:"created_at"`
+	UpdatedAt       time.Time         `gorm:"autoUpdateTime" json:"updated_at"`
 }
