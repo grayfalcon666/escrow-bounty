@@ -11,7 +11,7 @@ import (
 )
 
 func newTestServer(t *testing.T, store db.Store, bankClient db.BankClient) *Server {
-	config, err := util.LoadConfig(".")
+	config, err := util.LoadConfig("..")
 	if err != nil {
 		log.Fatalf("无法加载配置: %v", err)
 	}

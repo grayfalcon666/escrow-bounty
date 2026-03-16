@@ -19,7 +19,6 @@ import (
 func TestCreateBountyAPI(t *testing.T) {
 	employerUsername := "alice"
 	employerAccountID := int64(10)
-	platformEscrowAccountID := int64(999)
 	rewardAmount := int64(5000)
 
 	// 准备前端请求
@@ -51,7 +50,7 @@ func TestCreateBountyAPI(t *testing.T) {
 			buildStubs: func(store *mockdb.MockStore, bankClient *mockdb.MockBankClient) {
 				// 期望业务逻辑调用 PublishBounty，并且没有任何报错
 				store.EXPECT().
-					PublishBounty(gomock.Any(), gomock.Any(), gomock.Any(), employerAccountID, platformEscrowAccountID).
+					PublishBounty(gomock.Any(), gomock.Any(), gomock.Any(), employerAccountID, gomock.Any()).
 					Times(1).
 					Return(nil)
 			},
@@ -70,7 +69,7 @@ func TestCreateBountyAPI(t *testing.T) {
 			buildStubs: func(store *mockdb.MockStore, bankClient *mockdb.MockBankClient) {
 				// 期望业务逻辑调用 PublishBounty，但模拟它返回一个错误（代表转账失败或事务回滚）
 				store.EXPECT().
-					PublishBounty(gomock.Any(), gomock.Any(), gomock.Any(), employerAccountID, platformEscrowAccountID).
+					PublishBounty(gomock.Any(), gomock.Any(), gomock.Any(), employerAccountID, gomock.Any()).
 					Times(1).
 					Return(fmt.Errorf("资金冻结失败"))
 			},

@@ -10,6 +10,11 @@ import (
 )
 
 func (server *Server) GetBounty(ctx context.Context, req *pb.GetBountyRequest) (*pb.GetBountyResponse, error) {
+	_, err := server.authorizeUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	if req.GetId() <= 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "非法的悬赏 ID")
 	}

@@ -10,6 +10,11 @@ import (
 )
 
 func (server *Server) ListBounties(ctx context.Context, req *pb.ListBountiesRequest) (*pb.ListBountiesResponse, error) {
+	_, err := server.authorizeUser(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	limit := int(req.GetPageSize())
 	if limit <= 0 || limit > 100 {
 		limit = 20 // 默认每页 20 条
