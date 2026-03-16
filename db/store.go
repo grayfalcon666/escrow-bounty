@@ -9,12 +9,25 @@ import (
 	"gorm.io/gorm"
 )
 
-type Store struct {
+type Store interface {
+	CreateBounty(ctx context.Context, bounty *models.Bounty) error
+	GetBountyByID(ctx context.Context, id int64) (*models.Bounty, error)
+	ListBounties(ctx context.Context, status models.BountyStatus, limit, offset int) ([]models.Bounty, error)
+	UpdateBountyStatus(ctx context.Context, id int64, status models.BountyStatus) error
+	CreateApplication(ctx context.Context, app *models.BountyApplication) error
+	UpdateApplicationStatus(ctx context.Context, applicationID int64, status models.ApplicationStatus) error
+	PublishBounty(ctx context.Context, bounty *models.Bounty, bankClient BankClient, employerAccountID, platformEscrowAccountID int64) error
+	AcceptBounty(ctx context.Context, bountyID, hunter_account_id int64, hunterUsername string) (*models.BountyApplication, error)
+	ConfirmHunter(ctx context.Context, bountyID int64, applicationID int64, employerUsername string) error
+	CompleteBounty(ctx context.Context, bountyID int64, employerUsername string, bankClient BankClient, platformAccountID int64) error
+}
+
+type SQLStore struct {
 	db *gorm.DB
 }
 
-func NewStore(db *gorm.DB) *Store {
-	return &Store{
+func NewStore(db *gorm.DB) Store {
+	return &SQLStore{
 		db: db,
 	}
 }
@@ -22,12 +35,12 @@ func NewStore(db *gorm.DB) *Store {
 // ==========================================
 // Bounties (悬赏操作)
 // ==========================================
-func (s *Store) CreateBounty(ctx context.Context, bounty *models.Bounty) error {
+func (s *SQLStore) CreateBounty(ctx context.Context, bounty *models.Bounty) error {
 	return s.db.WithContext(ctx).Create(bounty).Error
 }
 
 // 根据 ID 获取单个悬赏详情，并使用 Preload 预加载关联的申请列表
-func (s *Store) GetBountyByID(ctx context.Context, id int64) (*models.Bounty, error) {
+func (s *SQLStore) GetBountyByID(ctx context.Context, id int64) (*models.Bounty, error) {
 	var bounty models.Bounty
 	err := s.db.WithContext(ctx).Preload("Applications").First(&bounty, id).Error
 	if err != nil {
@@ -37,7 +50,7 @@ func (s *Store) GetBountyByID(ctx context.Context, id int64) (*models.Bounty, er
 }
 
 // 分页获取悬赏列表，支持按状态过滤
-func (s *Store) ListBounties(ctx context.Context, status models.BountyStatus, limit, offset int) ([]models.Bounty, error) {
+func (s *SQLStore) ListBounties(ctx context.Context, status models.BountyStatus, limit, offset int) ([]models.Bounty, error) {
 	var bounties []models.Bounty
 	query := s.db.WithContext(ctx).Limit(limit).Offset(offset)
 
@@ -51,7 +64,7 @@ func (s *Store) ListBounties(ctx context.Context, status models.BountyStatus, li
 }
 
 // UpdateBountyStatus 更新悬赏的状态
-func (s *Store) UpdateBountyStatus(ctx context.Context, id int64, status models.BountyStatus) error {
+func (s *SQLStore) UpdateBountyStatus(ctx context.Context, id int64, status models.BountyStatus) error {
 	return s.db.WithContext(ctx).
 		Model(&models.Bounty{}).
 		Where("id = ?", id).
@@ -62,11 +75,11 @@ func (s *Store) UpdateBountyStatus(ctx context.Context, id int64, status models.
 // Bounty Applications (接单申请操作)
 // ==========================================
 
-func (s *Store) CreateApplication(ctx context.Context, app *models.BountyApplication) error {
+func (s *SQLStore) CreateApplication(ctx context.Context, app *models.BountyApplication) error {
 	return s.db.WithContext(ctx).Create(app).Error
 }
 
-func (s *Store) UpdateApplicationStatus(ctx context.Context, applicationID int64, status models.ApplicationStatus) error {
+func (s *SQLStore) UpdateApplicationStatus(ctx context.Context, applicationID int64, status models.ApplicationStatus) error {
 	return s.db.WithContext(ctx).
 		Model(&models.BountyApplication{}).
 		Where("id = ?", applicationID).
@@ -82,7 +95,7 @@ type BankClient interface {
 	Transfer(ctx context.Context, fromAccount, toAccount int64, amount int64, idempotencyKey string) error
 }
 
-func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankClient BankClient, employerAccountID, platformEscrowAccountID int64) error {
+func (s *SQLStore) PublishBounty(ctx context.Context, bounty *models.Bounty, bankClient BankClient, employerAccountID, platformEscrowAccountID int64) error {
 
 	bounty.Status = models.BountyStatusPaying
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -129,7 +142,7 @@ func (s *Store) PublishBounty(ctx context.Context, bounty *models.Bounty, bankCl
 }
 
 // AcceptBounty 处理猎人“抢单/申请”逻辑
-func (s *Store) AcceptBounty(ctx context.Context, bountyID, hunter_account_id int64, hunterUsername string) (*models.BountyApplication, error) {
+func (s *SQLStore) AcceptBounty(ctx context.Context, bountyID, hunter_account_id int64, hunterUsername string) (*models.BountyApplication, error) {
 	var application models.BountyApplication
 
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
@@ -161,7 +174,7 @@ func (s *Store) AcceptBounty(ctx context.Context, bountyID, hunter_account_id in
 	return &application, nil
 }
 
-func (s *Store) ConfirmHunter(ctx context.Context, bountyID int64, applicationID int64, employerUsername string) error {
+func (s *SQLStore) ConfirmHunter(ctx context.Context, bountyID int64, applicationID int64, employerUsername string) error {
 	return s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var bounty models.Bounty
 		// 加上 FOR UPDATE 锁，防止并发修改
@@ -199,7 +212,7 @@ func (s *Store) ConfirmHunter(ctx context.Context, bountyID int64, applicationID
 	})
 }
 
-func (s *Store) CompleteBounty(ctx context.Context, bountyID int64, employerUsername string, bankClient BankClient, platformAccountID int64) error {
+func (s *SQLStore) CompleteBounty(ctx context.Context, bountyID int64, employerUsername string, bankClient BankClient, platformAccountID int64) error {
 	var rewardAmount int64
 	var hunterAccountID int64
 

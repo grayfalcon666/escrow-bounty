@@ -11,6 +11,7 @@ import (
 	"github.com/grayfalcon666/escrow-bounty/gapi"
 	"github.com/grayfalcon666/escrow-bounty/pb"
 	"github.com/grayfalcon666/escrow-bounty/token"
+	"github.com/grayfalcon666/escrow-bounty/util"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
 	"google.golang.org/grpc"
@@ -18,27 +19,21 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-const (
-	dbSource          = "postgresql://root:secret@localhost:5433/escrow_db?sslmode=disable"
-	grpcServerAddress = "0.0.0.0:9097"
-	httpServerAddress = "0.0.0.0:8087"
-	simpleBankAddress = "localhost:11453"
-)
-
 func main() {
-	db.InitDB(dbSource)
+	config, err := util.LoadConfig(".")
+	if err != nil {
+		log.Fatalf("无法加载配置: %v", err)
+	}
+
+	db.InitDB(config.DBSource)
 	store := db.NewStore(db.Client)
 
-	secretKey := "12345678901234567890123456789012"
-	tokenMaker, err := token.NewJWTMaker(secretKey)
+	tokenMaker, err := token.NewJWTMaker(config.TokenSymmetricKey)
 	if err != nil {
 		log.Fatalf("无法创建 JWT Maker: %v", err)
 	}
 
-	conn, err := grpc.NewClient(
-		simpleBankAddress,
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
+	conn, err := grpc.NewClient(config.SimpleBankAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("无法连接到 Simple Bank: %v", err)
 	}
@@ -53,22 +48,22 @@ func main() {
 	// log.Printf("猎人 Token (用于接单申请, ID: 102):\nBearer %s\n", hunterToken)
 	// log.Println("========================================")
 
-	systemToken, _ := tokenMaker.CreateToken("escrow", 365*24*time.Hour)
+	systemToken, _ := tokenMaker.CreateToken(config.EscrowSystemUsername, 365*24*time.Hour)
 
 	bankClient := db.NewGRPCBankClient(conn, systemToken)
 
-	server := gapi.NewServer(store, bankClient, tokenMaker)
+	server := gapi.NewServer(config, store, bankClient, tokenMaker)
 
-	go runGatewayServer(server)
-	runGrpcServer(server)
+	go runGatewayServer(config, server)
+	runGrpcServer(config, server)
 }
 
-func runGrpcServer(server pb.EscrowBountyServiceServer) {
+func runGrpcServer(config util.Config, server pb.EscrowBountyServiceServer) {
 	grpcServer := grpc.NewServer()
 	pb.RegisterEscrowBountyServiceServer(grpcServer, server)
 	reflection.Register(grpcServer) // 开启反射
 
-	listener, err := net.Listen("tcp", grpcServerAddress)
+	listener, err := net.Listen("tcp", config.GRPCServerAddress)
 	if err != nil {
 		log.Fatalf("无法监听 gRPC 端口: %v", err)
 	}
@@ -80,7 +75,7 @@ func runGrpcServer(server pb.EscrowBountyServiceServer) {
 	}
 }
 
-func runGatewayServer(server pb.EscrowBountyServiceServer) {
+func runGatewayServer(config util.Config, server pb.EscrowBountyServiceServer) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -106,7 +101,7 @@ func runGatewayServer(server pb.EscrowBountyServiceServer) {
 
 	handler := corsHandler.Handler(mux)
 
-	listener, err := net.Listen("tcp", httpServerAddress)
+	listener, err := net.Listen("tcp", config.HTTPServerAddress)
 	if err != nil {
 		log.Fatalf("无法监听 HTTP 端口: %v", err)
 	}

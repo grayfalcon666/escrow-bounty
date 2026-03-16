@@ -26,4 +26,7 @@ proto:
 		--grpc-gateway_out=pb --grpc-gateway_opt=paths=source_relative \
 		proto/*.proto
 
+mock:
+	mockgen -package mockdb -destination db/mock/store.go github.com/grayfalcon666/escrow-bounty/db Store,BankClient
+
 .PHONY: server postgres createdb dropdb migrateup migratedown proto

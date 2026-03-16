@@ -12,7 +12,7 @@ func (server *Server) CompleteBounty(ctx context.Context, req *pb.CompleteBounty
 		return nil, err
 	}
 
-	platformEscrowAccountID := int64(3) //TODO 用viper统一管理配置文件
+	platformEscrowAccountID := server.config.PlatformEscrowAccountID
 
 	err = server.store.CompleteBounty(ctx, req.GetBountyId(), authPayload.Username, server.bankClient, platformEscrowAccountID)
 	if err != nil {

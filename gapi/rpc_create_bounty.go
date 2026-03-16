@@ -34,7 +34,7 @@ func (server *Server) CreateBounty(ctx context.Context, req *pb.CreateBountyRequ
 	}
 
 	// 设定平台担保账户的 ID
-	platformEscrowAccountID := int64(3)
+	platformEscrowAccountID := server.config.PlatformEscrowAccountID
 
 	// 调用带有 Saga 分布式事务逻辑的 Store 方法
 	err = server.store.PublishBounty(ctx, bounty, server.bankClient, employerAccountID, platformEscrowAccountID)
