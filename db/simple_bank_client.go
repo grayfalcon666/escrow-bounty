@@ -49,3 +49,24 @@ func (c *GRPCBankClient) Transfer(ctx context.Context, fromAccountID, toAccountI
 
 	return nil
 }
+
+// 注意这里的参数，只有 ctx 和 accountID
+func (c *GRPCBankClient) VerifyAccountOwner(ctx context.Context, accountID int64) error {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok || len(md.Get("authorization")) == 0 {
+		return fmt.Errorf("未找到鉴权 Token，无法校验账户")
+	}
+
+	outgoingCtx := metadata.NewOutgoingContext(context.Background(), md)
+	req := &simplebankpb.GetAccountRequest{
+		Id: accountID,
+	}
+
+	// 呼叫 Simple Bank
+	_, err := c.client.GetAccount(outgoingCtx, req)
+	if err != nil {
+		return fmt.Errorf("账户归属校验失败: %w", err)
+	}
+
+	return nil
+}

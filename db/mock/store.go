@@ -236,3 +236,17 @@ func (mr *MockBankClientMockRecorder) Transfer(ctx, fromAccount, toAccount, amou
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Transfer", reflect.TypeOf((*MockBankClient)(nil).Transfer), ctx, fromAccount, toAccount, amount, idempotencyKey)
 }
+
+// VerifyAccountOwner mocks base method.
+func (m *MockBankClient) VerifyAccountOwner(ctx context.Context, accountID int64) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "VerifyAccountOwner", ctx, accountID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// VerifyAccountOwner indicates an expected call of VerifyAccountOwner.
+func (mr *MockBankClientMockRecorder) VerifyAccountOwner(ctx, accountID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VerifyAccountOwner", reflect.TypeOf((*MockBankClient)(nil).VerifyAccountOwner), ctx, accountID)
+}

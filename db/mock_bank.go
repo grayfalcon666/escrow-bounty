@@ -24,3 +24,8 @@ func (m *MockBankClient) Transfer(ctx context.Context, fromAccountID, toAccountI
 	log.Printf("[Mock Simplebank] 扣款成功！")
 	return nil
 }
+
+func (m *MockBankClient) VerifyAccountOwner(ctx context.Context, accountID int64) error {
+	// Mock 测试时直接放行
+	return nil
+}

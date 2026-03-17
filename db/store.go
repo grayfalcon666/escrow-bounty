@@ -92,8 +92,8 @@ func (s *SQLStore) UpdateApplicationStatus(ctx context.Context, applicationID in
 // ==========================================
 
 type BankClient interface {
-	// Transfer 发起转账 携带 idempotencyKey 防重放
 	Transfer(ctx context.Context, fromAccount, toAccount int64, amount int64, idempotencyKey string) error
+	VerifyAccountOwner(ctx context.Context, accountID int64) error
 }
 
 func (s *SQLStore) PublishBounty(ctx context.Context, bounty *models.Bounty, bankClient BankClient, employerAccountID, platformEscrowAccountID int64) error {

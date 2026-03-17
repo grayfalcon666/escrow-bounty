@@ -19,6 +19,11 @@ func (server *Server) AcceptBounty(ctx context.Context, req *pb.AcceptBountyRequ
 		return nil, status.Errorf(codes.InvalidArgument, "非法的悬赏 ID")
 	}
 
+	err = server.bankClient.VerifyAccountOwner(ctx, req.GetHunterAccountId())
+	if err != nil {
+		return nil, status.Errorf(codes.PermissionDenied, "收款账户无效或不属于您: %v", err)
+	}
+
 	// 调用包含 FOR UPDATE 行级锁的并发安全方法
 	application, err := server.store.AcceptBounty(ctx, req.GetBountyId(), req.GetHunterAccountId(), authPayload.Username)
 	if err != nil {

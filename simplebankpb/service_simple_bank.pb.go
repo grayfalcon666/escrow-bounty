@@ -25,45 +25,56 @@ var File_service_simple_bank_proto protoreflect.FileDescriptor
 
 const file_service_simple_bank_proto_rawDesc = "" +
 	"\n" +
-	"\x19service_simple_bank.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x15rpc_create_user.proto\x1a\x14rpc_login_user.proto\x1a\x16rpc_verify_email.proto\x1a\x15rpc_update_user.proto\x1a\x15rpc_transfer_tx.proto2\xc2\x03\n" +
+	"\x19service_simple_bank.proto\x12\x02pb\x1a\x1cgoogle/api/annotations.proto\x1a\x15rpc_create_user.proto\x1a\x14rpc_login_user.proto\x1a\x16rpc_verify_email.proto\x1a\x15rpc_update_user.proto\x1a\x15rpc_transfer_tx.proto\x1a\x18rpc_create_account.proto\x1a\x15rpc_get_account.proto2\xe6\x04\n" +
 	"\n" +
 	"SimpleBank\x12W\n" +
 	"\n" +
-	"CreateUser\x12\x15.pb.CreateUserRequest\x1a\x16.pb.CreateUserResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/create_user\x12S\n" +
+	"CreateUser\x12\x15.pb.CreateUserRequest\x1a\x16.pb.CreateUserResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/create_user\x12c\n" +
+	"\rCreateAccount\x12\x18.pb.CreateAccountRequest\x1a\x19.pb.CreateAccountResponse\"\x1d\x82\xd3\xe4\x93\x02\x17:\x01*\"\x12/v1/create_account\x12S\n" +
 	"\tLoginUser\x12\x14.pb.LoginUserRequest\x1a\x15.pb.LoginUserResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/v1/login_user\x12X\n" +
 	"\vVerifyEmail\x12\x16.pb.VerifyEmailRequest\x1a\x17.pb.VerifyEmailResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/verify_email\x12W\n" +
 	"\n" +
 	"UpdateUser\x12\x15.pb.UpdateUserRequest\x1a\x16.pb.UpdateUserResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/v1/update_user\x12S\n" +
-	"\bTransfer\x12\x15.pb.TransferTxRequest\x1a\x16.pb.TransferTxResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/v1/transfersB\x0fZ\rsimplebank/pbb\x06proto3"
+	"\bTransfer\x12\x15.pb.TransferTxRequest\x1a\x16.pb.TransferTxResponse\"\x18\x82\xd3\xe4\x93\x02\x12:\x01*\"\r/v1/transfers\x12=\n" +
+	"\n" +
+	"GetAccount\x12\x15.pb.GetAccountRequest\x1a\x16.pb.GetAccountResponse\"\x00B\x0fZ\rsimplebank/pbb\x06proto3"
 
 var file_service_simple_bank_proto_goTypes = []any{
-	(*CreateUserRequest)(nil),   // 0: pb.CreateUserRequest
-	(*LoginUserRequest)(nil),    // 1: pb.LoginUserRequest
-	(*VerifyEmailRequest)(nil),  // 2: pb.VerifyEmailRequest
-	(*UpdateUserRequest)(nil),   // 3: pb.UpdateUserRequest
-	(*TransferTxRequest)(nil),   // 4: pb.TransferTxRequest
-	(*CreateUserResponse)(nil),  // 5: pb.CreateUserResponse
-	(*LoginUserResponse)(nil),   // 6: pb.LoginUserResponse
-	(*VerifyEmailResponse)(nil), // 7: pb.VerifyEmailResponse
-	(*UpdateUserResponse)(nil),  // 8: pb.UpdateUserResponse
-	(*TransferTxResponse)(nil),  // 9: pb.TransferTxResponse
+	(*CreateUserRequest)(nil),     // 0: pb.CreateUserRequest
+	(*CreateAccountRequest)(nil),  // 1: pb.CreateAccountRequest
+	(*LoginUserRequest)(nil),      // 2: pb.LoginUserRequest
+	(*VerifyEmailRequest)(nil),    // 3: pb.VerifyEmailRequest
+	(*UpdateUserRequest)(nil),     // 4: pb.UpdateUserRequest
+	(*TransferTxRequest)(nil),     // 5: pb.TransferTxRequest
+	(*GetAccountRequest)(nil),     // 6: pb.GetAccountRequest
+	(*CreateUserResponse)(nil),    // 7: pb.CreateUserResponse
+	(*CreateAccountResponse)(nil), // 8: pb.CreateAccountResponse
+	(*LoginUserResponse)(nil),     // 9: pb.LoginUserResponse
+	(*VerifyEmailResponse)(nil),   // 10: pb.VerifyEmailResponse
+	(*UpdateUserResponse)(nil),    // 11: pb.UpdateUserResponse
+	(*TransferTxResponse)(nil),    // 12: pb.TransferTxResponse
+	(*GetAccountResponse)(nil),    // 13: pb.GetAccountResponse
 }
 var file_service_simple_bank_proto_depIdxs = []int32{
-	0, // 0: pb.SimpleBank.CreateUser:input_type -> pb.CreateUserRequest
-	1, // 1: pb.SimpleBank.LoginUser:input_type -> pb.LoginUserRequest
-	2, // 2: pb.SimpleBank.VerifyEmail:input_type -> pb.VerifyEmailRequest
-	3, // 3: pb.SimpleBank.UpdateUser:input_type -> pb.UpdateUserRequest
-	4, // 4: pb.SimpleBank.Transfer:input_type -> pb.TransferTxRequest
-	5, // 5: pb.SimpleBank.CreateUser:output_type -> pb.CreateUserResponse
-	6, // 6: pb.SimpleBank.LoginUser:output_type -> pb.LoginUserResponse
-	7, // 7: pb.SimpleBank.VerifyEmail:output_type -> pb.VerifyEmailResponse
-	8, // 8: pb.SimpleBank.UpdateUser:output_type -> pb.UpdateUserResponse
-	9, // 9: pb.SimpleBank.Transfer:output_type -> pb.TransferTxResponse
-	5, // [5:10] is the sub-list for method output_type
-	0, // [0:5] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: pb.SimpleBank.CreateUser:input_type -> pb.CreateUserRequest
+	1,  // 1: pb.SimpleBank.CreateAccount:input_type -> pb.CreateAccountRequest
+	2,  // 2: pb.SimpleBank.LoginUser:input_type -> pb.LoginUserRequest
+	3,  // 3: pb.SimpleBank.VerifyEmail:input_type -> pb.VerifyEmailRequest
+	4,  // 4: pb.SimpleBank.UpdateUser:input_type -> pb.UpdateUserRequest
+	5,  // 5: pb.SimpleBank.Transfer:input_type -> pb.TransferTxRequest
+	6,  // 6: pb.SimpleBank.GetAccount:input_type -> pb.GetAccountRequest
+	7,  // 7: pb.SimpleBank.CreateUser:output_type -> pb.CreateUserResponse
+	8,  // 8: pb.SimpleBank.CreateAccount:output_type -> pb.CreateAccountResponse
+	9,  // 9: pb.SimpleBank.LoginUser:output_type -> pb.LoginUserResponse
+	10, // 10: pb.SimpleBank.VerifyEmail:output_type -> pb.VerifyEmailResponse
+	11, // 11: pb.SimpleBank.UpdateUser:output_type -> pb.UpdateUserResponse
+	12, // 12: pb.SimpleBank.Transfer:output_type -> pb.TransferTxResponse
+	13, // 13: pb.SimpleBank.GetAccount:output_type -> pb.GetAccountResponse
+	7,  // [7:14] is the sub-list for method output_type
+	0,  // [0:7] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_service_simple_bank_proto_init() }
@@ -76,6 +87,8 @@ func file_service_simple_bank_proto_init() {
 	file_rpc_verify_email_proto_init()
 	file_rpc_update_user_proto_init()
 	file_rpc_transfer_tx_proto_init()
+	file_rpc_create_account_proto_init()
+	file_rpc_get_account_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
