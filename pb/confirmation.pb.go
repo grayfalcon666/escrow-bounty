@@ -207,6 +207,95 @@ func (x *CompleteBountyResponse) GetBounty() *Bounty {
 	return nil
 }
 
+// 雇主取消悬赏的请求和响应
+type CancelBountyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	BountyId      int64                  `protobuf:"varint,1,opt,name=bounty_id,json=bountyId,proto3" json:"bounty_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CancelBountyRequest) Reset() {
+	*x = CancelBountyRequest{}
+	mi := &file_confirmation_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CancelBountyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CancelBountyRequest) ProtoMessage() {}
+
+func (x *CancelBountyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_confirmation_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CancelBountyRequest.ProtoReflect.Descriptor instead.
+func (*CancelBountyRequest) Descriptor() ([]byte, []int) {
+	return file_confirmation_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *CancelBountyRequest) GetBountyId() int64 {
+	if x != nil {
+		return x.BountyId
+	}
+	return 0
+}
+
+type CancelBountyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Bounty        *Bounty                `protobuf:"bytes,1,opt,name=bounty,proto3" json:"bounty,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CancelBountyResponse) Reset() {
+	*x = CancelBountyResponse{}
+	mi := &file_confirmation_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CancelBountyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CancelBountyResponse) ProtoMessage() {}
+
+func (x *CancelBountyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_confirmation_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CancelBountyResponse.ProtoReflect.Descriptor instead.
+func (*CancelBountyResponse) Descriptor() ([]byte, []int) {
+	return file_confirmation_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CancelBountyResponse) GetBounty() *Bounty {
+	if x != nil {
+		return x.Bounty
+	}
+	return nil
+}
+
 var File_confirmation_proto protoreflect.FileDescriptor
 
 const file_confirmation_proto_rawDesc = "" +
@@ -222,6 +311,11 @@ const file_confirmation_proto_rawDesc = "" +
 	"\tbounty_id\x18\x01 \x01(\x03R\bbountyId\"<\n" +
 	"\x16CompleteBountyResponse\x12\"\n" +
 	"\x06bounty\x18\x01 \x01(\v2\n" +
+	".pb.BountyR\x06bounty\"2\n" +
+	"\x13CancelBountyRequest\x12\x1b\n" +
+	"\tbounty_id\x18\x01 \x01(\x03R\bbountyId\":\n" +
+	"\x14CancelBountyResponse\x12\"\n" +
+	"\x06bounty\x18\x01 \x01(\v2\n" +
 	".pb.BountyR\x06bountyB+Z)github.com/grayfalcon666/escrow-bounty/pbb\x06proto3"
 
 var (
@@ -236,22 +330,25 @@ func file_confirmation_proto_rawDescGZIP() []byte {
 	return file_confirmation_proto_rawDescData
 }
 
-var file_confirmation_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_confirmation_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_confirmation_proto_goTypes = []any{
 	(*ConfirmHunterRequest)(nil),   // 0: pb.ConfirmHunterRequest
 	(*ConfirmHunterResponse)(nil),  // 1: pb.ConfirmHunterResponse
 	(*CompleteBountyRequest)(nil),  // 2: pb.CompleteBountyRequest
 	(*CompleteBountyResponse)(nil), // 3: pb.CompleteBountyResponse
-	(*Bounty)(nil),                 // 4: pb.Bounty
+	(*CancelBountyRequest)(nil),    // 4: pb.CancelBountyRequest
+	(*CancelBountyResponse)(nil),   // 5: pb.CancelBountyResponse
+	(*Bounty)(nil),                 // 6: pb.Bounty
 }
 var file_confirmation_proto_depIdxs = []int32{
-	4, // 0: pb.ConfirmHunterResponse.bounty:type_name -> pb.Bounty
-	4, // 1: pb.CompleteBountyResponse.bounty:type_name -> pb.Bounty
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	6, // 0: pb.ConfirmHunterResponse.bounty:type_name -> pb.Bounty
+	6, // 1: pb.CompleteBountyResponse.bounty:type_name -> pb.Bounty
+	6, // 2: pb.CancelBountyResponse.bounty:type_name -> pb.Bounty
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_confirmation_proto_init() }
@@ -266,7 +363,7 @@ func file_confirmation_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_confirmation_proto_rawDesc), len(file_confirmation_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -8,6 +8,7 @@ import "google/protobuf/timestamp.proto";
 message Bounty {
     int64 id = 1;
     string employer_username = 2;
+    int64 employer_account_id = 9;
     string title = 3;
     string description = 4;
     int64 reward_amount = 5;

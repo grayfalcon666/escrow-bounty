@@ -25,6 +25,7 @@ const (
 	EscrowBountyService_AcceptBounty_FullMethodName   = "/pb.EscrowBountyService/AcceptBounty"
 	EscrowBountyService_ConfirmHunter_FullMethodName  = "/pb.EscrowBountyService/ConfirmHunter"
 	EscrowBountyService_CompleteBounty_FullMethodName = "/pb.EscrowBountyService/CompleteBounty"
+	EscrowBountyService_CancelBounty_FullMethodName   = "/pb.EscrowBountyService/CancelBounty"
 )
 
 // EscrowBountyServiceClient is the client API for EscrowBountyService service.
@@ -45,6 +46,8 @@ type EscrowBountyServiceClient interface {
 	ConfirmHunter(ctx context.Context, in *ConfirmHunterRequest, opts ...grpc.CallOption) (*ConfirmHunterResponse, error)
 	// 雇主确认完成并打款
 	CompleteBounty(ctx context.Context, in *CompleteBountyRequest, opts ...grpc.CallOption) (*CompleteBountyResponse, error)
+	// 雇主取消悬赏并退款
+	CancelBounty(ctx context.Context, in *CancelBountyRequest, opts ...grpc.CallOption) (*CancelBountyResponse, error)
 }
 
 type escrowBountyServiceClient struct {
@@ -115,6 +118,16 @@ func (c *escrowBountyServiceClient) CompleteBounty(ctx context.Context, in *Comp
 	return out, nil
 }
 
+func (c *escrowBountyServiceClient) CancelBounty(ctx context.Context, in *CancelBountyRequest, opts ...grpc.CallOption) (*CancelBountyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CancelBountyResponse)
+	err := c.cc.Invoke(ctx, EscrowBountyService_CancelBounty_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // EscrowBountyServiceServer is the server API for EscrowBountyService service.
 // All implementations must embed UnimplementedEscrowBountyServiceServer
 // for forward compatibility.
@@ -133,6 +146,8 @@ type EscrowBountyServiceServer interface {
 	ConfirmHunter(context.Context, *ConfirmHunterRequest) (*ConfirmHunterResponse, error)
 	// 雇主确认完成并打款
 	CompleteBounty(context.Context, *CompleteBountyRequest) (*CompleteBountyResponse, error)
+	// 雇主取消悬赏并退款
+	CancelBounty(context.Context, *CancelBountyRequest) (*CancelBountyResponse, error)
 	mustEmbedUnimplementedEscrowBountyServiceServer()
 }
 
@@ -160,6 +175,9 @@ func (UnimplementedEscrowBountyServiceServer) ConfirmHunter(context.Context, *Co
 }
 func (UnimplementedEscrowBountyServiceServer) CompleteBounty(context.Context, *CompleteBountyRequest) (*CompleteBountyResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CompleteBounty not implemented")
+}
+func (UnimplementedEscrowBountyServiceServer) CancelBounty(context.Context, *CancelBountyRequest) (*CancelBountyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CancelBounty not implemented")
 }
 func (UnimplementedEscrowBountyServiceServer) mustEmbedUnimplementedEscrowBountyServiceServer() {}
 func (UnimplementedEscrowBountyServiceServer) testEmbeddedByValue()                             {}
@@ -290,6 +308,24 @@ func _EscrowBountyService_CompleteBounty_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _EscrowBountyService_CancelBounty_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelBountyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(EscrowBountyServiceServer).CancelBounty(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: EscrowBountyService_CancelBounty_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(EscrowBountyServiceServer).CancelBounty(ctx, req.(*CancelBountyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // EscrowBountyService_ServiceDesc is the grpc.ServiceDesc for EscrowBountyService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -320,6 +356,10 @@ var EscrowBountyService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CompleteBounty",
 			Handler:    _EscrowBountyService_CompleteBounty_Handler,
+		},
+		{
+			MethodName: "CancelBounty",
+			Handler:    _EscrowBountyService_CancelBounty_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

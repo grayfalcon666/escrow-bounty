@@ -23,17 +23,18 @@ const (
 )
 
 type Bounty struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	Id               int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	EmployerUsername string                 `protobuf:"bytes,2,opt,name=employer_username,json=employerUsername,proto3" json:"employer_username,omitempty"`
-	Title            string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
-	Description      string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	RewardAmount     int64                  `protobuf:"varint,5,opt,name=reward_amount,json=rewardAmount,proto3" json:"reward_amount,omitempty"`
-	Status           string                 `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty"`
-	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt        *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Id                int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	EmployerUsername  string                 `protobuf:"bytes,2,opt,name=employer_username,json=employerUsername,proto3" json:"employer_username,omitempty"`
+	EmployerAccountId int64                  `protobuf:"varint,9,opt,name=employer_account_id,json=employerAccountId,proto3" json:"employer_account_id,omitempty"`
+	Title             string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	Description       string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	RewardAmount      int64                  `protobuf:"varint,5,opt,name=reward_amount,json=rewardAmount,proto3" json:"reward_amount,omitempty"`
+	Status            string                 `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty"`
+	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt         *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *Bounty) Reset() {
@@ -78,6 +79,13 @@ func (x *Bounty) GetEmployerUsername() string {
 		return x.EmployerUsername
 	}
 	return ""
+}
+
+func (x *Bounty) GetEmployerAccountId() int64 {
+	if x != nil {
+		return x.EmployerAccountId
+	}
+	return 0
 }
 
 func (x *Bounty) GetTitle() string {
@@ -210,10 +218,11 @@ var File_common_proto protoreflect.FileDescriptor
 
 const file_common_proto_rawDesc = "" +
 	"\n" +
-	"\fcommon.proto\x12\x02pb\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb0\x02\n" +
+	"\fcommon.proto\x12\x02pb\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe0\x02\n" +
 	"\x06Bounty\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12+\n" +
-	"\x11employer_username\x18\x02 \x01(\tR\x10employerUsername\x12\x14\n" +
+	"\x11employer_username\x18\x02 \x01(\tR\x10employerUsername\x12.\n" +
+	"\x13employer_account_id\x18\t \x01(\x03R\x11employerAccountId\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x04 \x01(\tR\vdescription\x12#\n" +
 	"\rreward_amount\x18\x05 \x01(\x03R\frewardAmount\x12\x16\n" +

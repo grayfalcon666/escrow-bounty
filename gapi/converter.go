@@ -8,13 +8,14 @@ import (
 
 func convertBounty(bounty *models.Bounty) *pb.Bounty {
 	return &pb.Bounty{
-		Id:               bounty.ID,
-		EmployerUsername: bounty.EmployerUsername,
-		Title:            bounty.Title,
-		Description:      bounty.Description,
-		Status:           string(bounty.Status),
-		CreatedAt:        timestamppb.New(bounty.CreatedAt),
-		UpdatedAt:        timestamppb.New(bounty.UpdatedAt),
+		Id:                bounty.ID,
+		EmployerUsername:  bounty.EmployerUsername,
+		EmployerAccountId: bounty.EmployerAccountID,
+		Title:             bounty.Title,
+		Description:       bounty.Description,
+		Status:            string(bounty.Status),
+		CreatedAt:         timestamppb.New(bounty.CreatedAt),
+		UpdatedAt:         timestamppb.New(bounty.UpdatedAt),
 	}
 }
 

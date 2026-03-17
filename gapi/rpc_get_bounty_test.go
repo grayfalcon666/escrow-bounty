@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/mock/gomock"
+	"go.uber.org/mock/gomock"
 	mockdb "github.com/grayfalcon666/escrow-bounty/db/mock"
 	"github.com/grayfalcon666/escrow-bounty/models"
 	"github.com/grayfalcon666/escrow-bounty/pb"

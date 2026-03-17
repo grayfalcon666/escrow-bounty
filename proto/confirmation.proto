@@ -22,3 +22,12 @@ message CompleteBountyRequest {
 message CompleteBountyResponse {
     Bounty bounty = 1;
 }
+
+// 雇主取消悬赏的请求和响应
+message CancelBountyRequest {
+    int64 bounty_id = 1;
+}
+
+message CancelBountyResponse {
+    Bounty bounty = 1;
+}

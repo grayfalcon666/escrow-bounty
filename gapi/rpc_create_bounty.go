@@ -21,10 +21,11 @@ func (server *Server) CreateBounty(ctx context.Context, req *pb.CreateBountyRequ
 	}
 
 	bounty := &models.Bounty{
-		EmployerUsername: authPayload.Username,
-		Title:            req.GetTitle(),
-		Description:      req.GetDescription(),
-		RewardAmount:     req.GetRewardAmount(),
+		EmployerUsername:  authPayload.Username,
+		EmployerAccountID: req.EmployerAccountId,
+		Title:             req.GetTitle(),
+		Description:       req.GetDescription(),
+		RewardAmount:      req.GetRewardAmount(),
 		// Status 不需要在这里赋值 PublishBounty 事务里会将其初始化为 PAYING
 	}
 

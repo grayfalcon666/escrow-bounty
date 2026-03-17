@@ -55,4 +55,12 @@ service EscrowBountyService {
             body: "*"
         };
     }
+
+    // 雇主取消悬赏并退款
+    rpc CancelBounty(CancelBountyRequest) returns (CancelBountyResponse) {
+        option (google.api.http) = {
+            post: "/v1/bounties/{bounty_id}/cancel"
+            body: "*"
+        };
+    }
 }

@@ -20,6 +20,7 @@ type Store interface {
 	AcceptBounty(ctx context.Context, bountyID, hunter_account_id int64, hunterUsername string) (*models.BountyApplication, error)
 	ConfirmHunter(ctx context.Context, bountyID int64, applicationID int64, employerUsername string) error
 	CompleteBounty(ctx context.Context, bountyID int64, employerUsername string, bankClient BankClient, platformAccountID int64) error
+	CancelBounty(ctx context.Context, bountyID int64, employerUsername string, bankClient BankClient, platformAccountID int64) error
 }
 
 type SQLStore struct {
@@ -98,6 +99,7 @@ type BankClient interface {
 func (s *SQLStore) PublishBounty(ctx context.Context, bounty *models.Bounty, bankClient BankClient, employerAccountID, platformEscrowAccountID int64) error {
 
 	bounty.Status = models.BountyStatusPaying
+	bounty.EmployerAccountID = employerAccountID
 	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		if err := tx.Create(bounty).Error; err != nil {
 			return err
@@ -262,4 +264,53 @@ func (s *SQLStore) CompleteBounty(ctx context.Context, bountyID int64, employerU
 	return s.db.WithContext(ctx).Model(&models.Bounty{}).
 		Where("id = ?", bountyID).
 		Update("status", models.BountyStatusCompleted).Error
+}
+
+// Saga 补偿动作
+func (s *SQLStore) CancelBounty(ctx context.Context, bountyID int64, employerUsername string, bankClient BankClient, platformAccountID int64) error {
+	var refundAmount int64
+	var originalEmployerAccountID int64
+
+	err := s.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		var bounty models.Bounty
+		if err := tx.Set("gorm:query_option", "FOR UPDATE").First(&bounty, bountyID).Error; err != nil {
+			return err
+		}
+
+		if bounty.EmployerUsername != employerUsername {
+			return fmt.Errorf("权限不足: 只能取消您自己发布的悬赏")
+		}
+
+		// 只有在 PENDING (悬赏大厅中，未被任何人接单，或者没选定任何人) 状态下才能取消
+		if bounty.Status != models.BountyStatusPending {
+			return fmt.Errorf("该悬赏当前状态 (%s) 无法取消，仅支持未开始的任务", bounty.Status)
+		}
+
+		refundAmount = bounty.RewardAmount
+		originalEmployerAccountID = bounty.EmployerAccountID
+
+		// 将关联的、尚未处理的申请全部变为 REJECTED，保持数据整洁
+		tx.Model(&models.BountyApplication{}).
+			Where("bounty_id = ? AND status = ?", bountyID, models.AppStatusApplied).
+			Update("status", models.AppStatusRejected)
+
+		// 更新悬赏状态为 REFUNDING (退款中) 防止重复点击和并发竞争
+		return tx.Model(&bounty).Update("status", "REFUNDING").Error
+	})
+
+	if err != nil {
+		return err
+	}
+
+	idempotencyKey := fmt.Errorf("cancel_bounty_refund_%d", bountyID).Error()
+	rpcErr := bankClient.Transfer(context.Background(), platformAccountID, originalEmployerAccountID, refundAmount, idempotencyKey)
+
+	if rpcErr != nil {
+		log.Printf("严重异常: 订单 %d 取消成功，但退款到账户 %d 失败: %v\n", bountyID, originalEmployerAccountID, rpcErr)
+		return fmt.Errorf("订单已关闭，但退款请求发送失败，请联系客服: %w", rpcErr)
+	}
+
+	return s.db.WithContext(ctx).Model(&models.Bounty{}).
+		Where("id = ?", bountyID).
+		Update("status", models.BountyStatusCanceled).Error
 }
